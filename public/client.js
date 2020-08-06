@@ -1,3 +1,5 @@
+let stream = null
+
 fetch(location.pathname, { method: "POST" })
     .then(res => {
         return res.json();
@@ -7,7 +9,7 @@ fetch(location.pathname, { method: "POST" })
         const sessionId = res.sessionId;
         const token = res.token;
         const streamName = res.streamName;
-        initializeSession(apiKey, sessionId, token, streamName);
+        stream = initializeSession(apiKey, sessionId, token, streamName);
     })
     .catch(handleCallback);
 
@@ -52,6 +54,7 @@ function initializeSession(apiKey, sessionId, token, streamName) {
             handleCallback
         );
     });
+    return publisher
 }
 
 // Callback handler

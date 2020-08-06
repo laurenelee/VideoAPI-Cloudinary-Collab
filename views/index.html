@@ -15,6 +15,10 @@
 <body>
     <header>
         <h1>Participant</h1>
+        <button onclick="screenShot()">
+            Create a screen grab!
+        </button>
+        <div id="screenshot-button"></div>
     </header>
 
     <main>
@@ -30,6 +34,20 @@
 
     <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
     <script src="/client.js"></script>
+    <script>
+        function screenShot() {
+            document.getElementById("screenshot-button").innerHTML = "photo taken!";
+            const screen = stream.getImgData();
+            console.log("Getting image data!");
+            const formData = new FormData;
+            formData.append("image", screen);
+
+            fetch("/screenshot", {
+                method: "post",
+                body: formData
+            });
+        }
+    </script>
 </body>
 
 </html>
