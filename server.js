@@ -83,7 +83,6 @@ app.post("/screenshot", function (req, res) {
             console.log(result, error);
         }
     );
-
     res.send();
 });
 
