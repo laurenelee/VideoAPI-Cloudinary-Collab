@@ -74,7 +74,7 @@ app.post("/session/viewer/:room", (request, response) => {
     }
 });
 
-app.post("/screenshot", function (req, res) {
+app.post("/screenshot", (req, res) => {
     const base64imagedata = req.fields.image;
     console.log("uploading!")
     cloudinary.uploader.upload(
@@ -87,7 +87,7 @@ app.post("/screenshot", function (req, res) {
 });
 
 // start archiving 
-app.post('/archive/start', function (req, res) {
+app.post('/archive/start', (req, res) => {
     let archiveName = "Vonage + Cloudinary Video Archive"
 
     for (const roomName in sessions) {
@@ -99,7 +99,7 @@ app.post('/archive/start', function (req, res) {
         name: archiveName
     };
 
-    OT.startArchive(req.fields.sessionId, archiveOptions, function (err, archive) {
+    OT.startArchive(req.fields.sessionId, archiveOptions, (err, archive) => {
         if (err) {
             return res.status(500).send('Could not start archive for session ' + req.fields.sessionId + '. error=' + err.message);
         }
@@ -109,7 +109,7 @@ app.post('/archive/start', function (req, res) {
 });
 
 //  stop archiving 
-app.post('/archive/stop/:archiveId', function (req, res) {
+app.post('/archive/stop/:archiveId', (req, res) => {
     var archiveId = req.params['archiveId'];
     OT.stopArchive(archiveId, function (err, archive) {
         if (err) return res.status(500).send('Could not stop archive ' + archiveId + '. error=' + err.message);
@@ -118,9 +118,9 @@ app.post('/archive/stop/:archiveId', function (req, res) {
 });
 
 // download archive 
-app.get('/download/:archiveId', function (req, res) {
+app.get('/download/:archiveId', (req, res) => {
     var archiveId = req.params['archiveId'];
-    OT.getArchive(archiveId, function (err, archive) {
+    OT.getArchive(archiveId, (err, archive) => {
         if (err) return res.status(500).send('Could not get archive ' + archiveId + '. error=' + err.message);
         return res.send(archive.url);
         // NOTE TO FUTURE SELF 

@@ -58,13 +58,13 @@ function initializeSession(apiKey, sessionId, token, streamName) {
     });
 
     // start archive event
-    session.on('archiveStarted', function archiveStarted(event) {
+    session.on('archiveStarted', event => {
         archiveID = event.id;
         console.log('Archive started ' + archiveID);
     });
 
     // stop archive event
-    session.on('archiveStopped', function archiveStopped(event) {
+    session.on('archiveStopped', event => {
         archiveID = event.id;
         console.log('Archive stopped ' + archiveID);
     });
@@ -89,8 +89,9 @@ function stopArchive() {
     })
 }
 
-function saveArchive() {
-    fetch('/download/' + archiveID)
+async function saveArchive() {
+    const response = await fetch('/download/' + archiveID)
+    console.log(`Archive Download ${await response.text()}`)
 }
 
 // Callback handler
