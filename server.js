@@ -40,7 +40,7 @@ app.post("/session/participant/:room", (request, response) => {
         generatePublisherToken(roomName, streamName, response);
     } else {
         // If the session does not exist, create one
-        OT.createSession((error, session) => {
+        OT.createSession({ mediaMode: "routed" }, (error, session) => {
             if (error) {
                 console.log("Error creating session:", error);
             } else {
@@ -84,6 +84,49 @@ app.post("/screenshot", function (req, res) {
         }
     );
     res.send();
+});
+
+// start archiving 
+app.post('/archive/start', function (req, res) {
+    let archiveName = "Vonage + Cloudinary Video Archive"
+
+    for (const roomName in sessions) {
+        if (sessions[roomName] == req.fields.sessionId) {
+            archiveName = "Vonage + Cloudinary Video Archive for " + roomName
+        }
+    }
+    const archiveOptions = {
+        name: archiveName
+    };
+
+    OT.startArchive(req.fields.sessionId, archiveOptions, function (err, archive) {
+        if (err) {
+            return res.status(500).send('Could not start archive for session ' + req.fields.sessionId + '. error=' + err.message);
+        }
+        return res.send(archive);
+    });
+
+});
+
+//  stop archiving 
+app.post('/archive/stop/:archiveId', function (req, res) {
+    var archiveId = req.params['archiveId'];
+    OT.stopArchive(archiveId, function (err, archive) {
+        if (err) return res.status(500).send('Could not stop archive ' + archiveId + '. error=' + err.message);
+        return res.json(archive);
+    });
+});
+
+// download archive 
+app.get('/download/:archiveId', function (req, res) {
+    var archiveId = req.params['archiveId'];
+    OT.getArchive(archiveId, function (err, archive) {
+        if (err) return res.status(500).send('Could not get archive ' + archiveId + '. error=' + err.message);
+        return res.send(archive.url);
+        // NOTE TO FUTURE SELF 
+        // send other metadata in archive 
+        // send to cloudinary now and return cloudinary url
+    });
 });
 
 function generatePublisherToken(roomName, streamName, response) {

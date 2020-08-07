@@ -1,12 +1,14 @@
 let stream = null
+let archiveID = null
+let sessionId = null
 
 fetch(location.pathname, { method: "POST" })
     .then(res => {
         return res.json();
     })
     .then(res => {
+        sessionId = res.sessionId;
         const apiKey = res.apiKey;
-        const sessionId = res.sessionId;
         const token = res.token;
         const streamName = res.streamName;
         stream = initializeSession(apiKey, sessionId, token, streamName);
@@ -54,7 +56,41 @@ function initializeSession(apiKey, sessionId, token, streamName) {
             handleCallback
         );
     });
+
+    // start archive event
+    session.on('archiveStarted', function archiveStarted(event) {
+        archiveID = event.id;
+        console.log('Archive started ' + archiveID);
+    });
+
+    // stop archive event
+    session.on('archiveStopped', function archiveStopped(event) {
+        archiveID = event.id;
+        console.log('Archive stopped ' + archiveID);
+    });
+
     return publisher
+}
+
+async function startArchive() {
+    const body = new FormData()
+    body.append('sessionId', sessionId)
+    const response = await fetch('/archive/start', {
+        method: "POST",
+        body: body
+    })
+    const data = await response.json()
+    archiveID = data.id
+}
+
+function stopArchive() {
+    fetch('/archive/stop/' + archiveID, {
+        method: "POST"
+    })
+}
+
+function saveArchive() {
+    fetch('/download/' + archiveID)
 }
 
 // Callback handler
