@@ -45,11 +45,7 @@ html {
     font-size: inherit;
     padding: 0.5em;
   }
-  
-  .hidden {
-    display: none;
-  }
-  
+
   .registration {
     display: flex;
     flex-direction: column;

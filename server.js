@@ -27,10 +27,6 @@ app.get("/session/participant/:room", (request, response) => {
     response.sendFile(__dirname + "/views/index.html");
 });
 
-app.get("/session/viewer/:room", (request, response) => {
-    response.sendFile(__dirname + "/views/viewer.html");
-});
-
 app.post("/session/participant/:room", (request, response) => {
     const roomName = request.params.room;
     const streamName = request.body.username;
@@ -48,27 +44,6 @@ app.post("/session/participant/:room", (request, response) => {
                 sessions[roomName] = session.sessionId;
                 // Generate the token
                 generatePublisherToken(roomName, streamName, response);
-            }
-        });
-    }
-});
-
-app.post("/session/viewer/:room", (request, response) => {
-    const roomName = request.params.room;
-    // Check if the session already exists
-    if (sessions[roomName]) {
-        // Generate the token
-        generateSubscriberToken(roomName, response);
-    } else {
-        // If the session does not exist, create one
-        OT.createSession((error, session) => {
-            if (error) {
-                console.log("Error creating session:", error);
-            } else {
-                // Store the session in the sessions object
-                sessions[roomName] = session.sessionId;
-                // Generate the token
-                generateSubscriberToken(roomName, response);
             }
         });
     }
